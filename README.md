@@ -4,8 +4,10 @@ NECAT是肖传乐老师团队开发的一个针对Nanopore数据组装的软件�
 太长不看的结论: Nanopore的组装推荐用下NECAT。组装之后是先用MEDAKA做一遍三代polish，然后用NextPolish默认参数做二代polish。
 
 这篇将会以一篇发表在Nature Communication上的拟南芥nanopore数据介绍如何使用NECAT进行组装，运行在CentOS Linux release 7.3.1611 (Core)，64G为内存， 20线程(Intel® Xeon® CPU E5-2640 v4 @ 2.40GHz)，下面是正文。
+
 软件安装
 NECAT可以在https://github.com/xiaochuanle/NECAT/releases/页面获取最新的软件下载地址，这里下载的是0.01版本。
+
 
 wget https://github.com/xiaochuanle/NECAT/releases/download/v0.01/necat_20190307_linux_amd64.tar.gz
 tar xzvf necat_20190307_linux_amd64.tar.gz
@@ -19,6 +21,7 @@ mkdir NECAT && cd NECAT
 # 三代测序
 wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR217/003/ERR2173373/ERR2173373.fastq.gz
 seqkit seqkit fq2fa ERR2173373.fastq.gz | gzip -c > ERR2173373.fasta
+
 第二步: 创建配置文件
 necat.pl config ath_config.txt 
 配置文件中，主要修改如下几个参数
@@ -155,6 +158,7 @@ quast.py -t 100 --output-dir athaliana --circos \
     NECAT_RC_NP.fa \
     -r Athaliana.fa  \
     -g TAIR10_GFF3_genes.gff &
+
 一些描述基本信息
 CANU        N50 = 4875070,  L50 = 7, Total length = 114689024, GC % = 36.09 
 NECAT       N50 = 11146374, L50 = 5, Total length = 121978724, GC % = 36.50
@@ -163,6 +167,7 @@ NECAT_MD_NP N50 = 11405151, L50 = 5, Total length = 124142955, GC % = 36.30
 NECAT_NP    N50 = 11399084, L50 = 5, Total length = 124735066, GC % = 36.36
 NECAT_RC    N50 = 11212098, L50 = 5, Total length = 122519370, GC % = 36.4
 NECAT_RC_NP N50 = 11406553, L50 = 5, Total length = 124618502, GC % = 36.34
+
 在BUSCO完整度上， 以embryophyta_odb10作为物种数据库, 其中ONTmin_IT4是发表的文章里的结果, Athalina则是拟南芥的参考基因组，我们以它们的BUSCO值作为参照。
 Athalina     : C:98.6%[S:98.0%,D:0.6%],F:0.4%, M:1.0%, n:1375
 ONTmin_IT4   : C:98.4%[S:97.7%,D:0.7%],F:0.7%, M:0.9%, n:1375
@@ -170,14 +175,15 @@ CANU         : C:22.9%[S:22.8%,D:0.1%],F:20.2%,M:56.9%,n:1375
 NECAT        : C:36.6%[S:36.6%,D:0.0%],F:22.9%,M:40.5%,n:1375
 NECAT_MEDAKA : C:53.6%[S:53.2%,D:0.4%],F:21.0%,M:25.4%,n:1375
 NECAT_RACON  : C:45.3%[S:45.2%,D:0.1%],F:23.1%,M:31.6%,n:1375
+
 二代Polish后的BUSCO结果如下(MD: MEDAKA, RC: RACON, NP:NextPolish)：
 Athalina   : C:98.6%[S:98.0%,D:0.6%],F:0.4%,M:1.0%,n:1375
 ONTmin_IT4 : C:98.4%[S:97.7%,D:0.7%],F:0.7%,M:0.9%,n:1375
 NECAT_NP   : C:98.6%[S:97.9%,D:0.7%],F:0.4%,M:1.0%,n:1375   
 NECAT_MD_NP: C:98.7%[S:98.0%,D:0.7%],F:0.4%,M:0.9%,n:1375
 NECAT_RC_NP: C:98.5%[S:97.8%,D:0.7%],F:0.4%,M:1.1%,n:1375
-从以上这些数据，你可以得到以下几个洞见:
 
+从以上这些数据，你可以得到以下几个洞见:
 在Nanopore的组装上，NECAT效果优于Canu，无论是连续性还是N50上
 MEDAKA三代polish效果好于RACON。在速度上，MEDAKA比三遍RACON都慢，并且MEDAKA会将一些可能的错误组装给打断
 Nanopore的数据用NECAT组装后似乎用NextPolish进行polish后就行，但是由于物种比较小，可能不具有代表性。
